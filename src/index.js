@@ -1,13 +1,51 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Home from "./pages/home";
+import LoginPage from "./pages/login";
+import SignupPage from "./pages/signup";
+import Dashboard from "./pages/dashboard";
+import { Provider } from "react-redux";
+import store from './store';
+import WebcamStream from "./pages/webcam-feed";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path:"/login",
+        element: <LoginPage />,
+      },
+      {
+        path:"/signup",
+        element: <SignupPage />,
+      },
+      {
+        path:"/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path:"/stream",
+        element: <WebcamStream />,
+      },
+    ],
+  },
+]);
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
   </React.StrictMode>
 );
 
