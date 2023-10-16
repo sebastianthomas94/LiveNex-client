@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSigninMutation } from "../slices/userApiSlice";
@@ -12,16 +12,19 @@ export default function Login() {
   const [signin] = useSigninMutation();
   const navigate = useNavigate();
 
+  useEffect(()=>{
+    if(localStorage.getItem("user"))
+      navigate("/dashboard")
+  },[])
+
   const googleAuth = async () => {
     try {
       const authWindow = window.open("http://localhost:8000/user/auth/google");
-
+      
       const messageListener = (event) => {
         if (event.origin === "http://localhost:8000") {
           const response = event.data;
           localStorage.setItem("user", response.email)
-          console.log(response);
-          authWindow.close();
           window.removeEventListener("message", messageListener);
           if (response) navigate("/dashboard");
         }

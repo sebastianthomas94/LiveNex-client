@@ -23,6 +23,7 @@ const WebcamStream = () => {
         },
       });
       //setStream(webcamStream);
+      
       const videoElement = document.getElementById("video");
       videoElement.srcObject = webcamStream;
       const socket = io("http://localhost:8200", {

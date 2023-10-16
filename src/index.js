@@ -7,10 +7,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/home";
 import LoginPage from "./pages/login";
 import SignupPage from "./pages/signup";
-import Dashboard from "./pages/dashboard";
+import DashboardPage from "./pages/DashboardPage";
 import { Provider } from "react-redux";
 import store from './store';
 import WebcamStream from "./pages/webcam-feed";
+import 'font-awesome/css/font-awesome.min.css';
+import LiveStreamPage from "./pages/LiveStreamPage";
 
 const router = createBrowserRouter([
   {
@@ -31,11 +33,11 @@ const router = createBrowserRouter([
       },
       {
         path:"/dashboard",
-        element: <Dashboard />,
+        element: <DashboardPage />,
       },
       {
         path:"/stream",
-        element: <WebcamStream />,
+        element: <LiveStreamPage />,
       },
     ],
   },

@@ -5,9 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Home() {
   const navigate = useNavigate();
   useEffect(()=>{
-  if (!localStorage.getItem("user"))
-      navigate('/login'); 
-  },[navigate])
+  if (localStorage.getItem("user"))
+      navigate('/dashboard'); 
+  },[])
   return (
     <>
 
