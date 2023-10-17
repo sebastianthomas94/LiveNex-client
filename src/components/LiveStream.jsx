@@ -30,9 +30,10 @@ const LiveStream = () => {
           videoElement.srcObject = userMedia;
           const youtube_rtmp = localStorage.getItem("youtube_rtmp");
           const facebook_rtmp = localStorage.getItem("facebook_rtmp");
+          const twitch_rtmp = localStorage.getItem("twitch_rtmp");
           const socket = io("http://localhost:8200", {
             transports: ["websocket"],
-            query: { youtube_rtmp, facebook_rtmp },
+            query: { youtube_rtmp, facebook_rtmp, twitch_rtmp },
             withCredentials: true,
           });
           const mediaRecorder = new MediaRecorder(userMedia, {

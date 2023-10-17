@@ -47,6 +47,14 @@ const CreateLive = ({ isOpen, onClose }) => {
         setProfiles
       );
     }
+    if (option.label === "Twitch") {
+      twitchAutherization(
+        videoTitle,
+        videoDescription,
+        profiles,
+        setProfiles
+      );
+    }
     setIsOpenDropDown(false);
   };
 
@@ -340,6 +348,47 @@ function facebookAutherization(
       const { platform, profilePicture, facebook_rtmp } = event.data;
       localStorage.setItem("facebook_rtmp", facebook_rtmp);
       console.log("facebook rtmp url:",facebook_rtmp)
+      // switch (platform) {
+      //   case "youtube":
+      //     let newProfile = {
+      //       profilePicture,
+      //       icon: "fa fa-youtube",
+      //     };
+      //     setProfiles([...profiles, newProfile]);
+      //     break;
+      // }
+
+      window.removeEventListener("message", messageListener);
+    }
+  };
+  window.addEventListener("message", messageListener);
+}
+
+
+function twitchAutherization(
+  videoTitle,
+  videoDescription,
+  profiles,
+  setProfiles
+) {
+  const params = {
+    title: videoTitle,
+    description: videoDescription,
+  };
+  const paramString = new URLSearchParams(params).toString();
+
+  const authWindow = window.open(
+    `http://localhost:8000/user/auth/twitchauth?${paramString}`,
+    "_blank"
+  );
+    console.log("message lisner facebook activated");
+  const messageListener = (event) => {
+    if (event.origin === "http://localhost:8000") {
+      console.log("from event facebook:", event);
+      if (!event.data) return;
+      const { platform, profilePicture, twitch_rtmp } = event.data;
+      localStorage.setItem("twitch_rtmp", twitch_rtmp);
+      console.log("twitch rtmp url:",twitch_rtmp)
       // switch (platform) {
       //   case "youtube":
       //     let newProfile = {
