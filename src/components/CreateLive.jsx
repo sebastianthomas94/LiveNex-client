@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 import SocialMediaProfileIcon from "./SocialMediaProfileIcon";
 import { useNavigate } from "react-router-dom";
 
-
 const CreateLive = ({ isOpen, onClose }) => {
   const [isStudioSelected, setIsStudioSelected] = useState(false); // Default to Studio
   const [videoTitle, setVideoTitle] = useState("");
@@ -28,6 +27,7 @@ const CreateLive = ({ isOpen, onClose }) => {
     { label: "YouTube", icon: "fa fa-youtube" },
     { label: "Instagram", icon: "fa fa-instagram" },
     { label: "Twitch", icon: "fa fa-twitch" },
+    { label: "Facebook", icon: "fa fa-facebook" },
   ];
 
   const selectOption = (option) => {
@@ -39,6 +39,14 @@ const CreateLive = ({ isOpen, onClose }) => {
     if (option.label === "YouTube") {
       youtubeAutherization(videoTitle, videoDescription, profiles, setProfiles);
     }
+    if (option.label === "Facebook") {
+      facebookAutherization(
+        videoTitle,
+        videoDescription,
+        profiles,
+        setProfiles
+      );
+    }
     setIsOpenDropDown(false);
   };
 
@@ -46,7 +54,11 @@ const CreateLive = ({ isOpen, onClose }) => {
     return null;
   }
 
-  function goLive(){
+  function goLive() {
+    if (!videoDescription || !videoTitle || !profiles) {
+      toast.error("Enter the values first");
+      return;
+    }
     navigate("/stream");
   }
 
@@ -280,17 +292,19 @@ function youtubeAutherization(
 
     const messageListener = (event) => {
       if (event.origin === "http://localhost:8000") {
-        console.log("from event:", event);
+        console.log("from event youtube:", event);
         if (!event.data) return;
-        const { platform, profilePicture } = event.data;
-        switch (platform) {
+        const { platform, profilePicture, youtube_rtmp } = event.data;
+        localStorage.setItem("youtube_rtmp", youtube_rtmp);
+        switch (platform) 
+        {
           case "youtube":
-            let newProfile = {
-              profilePicture,
-              icon: "fa fa-youtube",
-            };
-            setProfiles([...profiles, newProfile]);
-            break;
+                        let newProfile = {
+                          profilePicture,
+                          icon: "fa fa-youtube",
+                        };
+                        setProfiles([...profiles, newProfile]);
+                        break;
         }
 
         window.removeEventListener("message", messageListener);
@@ -300,6 +314,46 @@ function youtubeAutherization(
   } catch (error) {
     if (error) throw error;
   }
+}
+
+function facebookAutherization(
+  videoTitle,
+  videoDescription,
+  profiles,
+  setProfiles
+) {
+  const params = {
+    title: videoTitle,
+    description: videoDescription,
+  };
+  const paramString = new URLSearchParams(params).toString();
+
+  const authWindow = window.open(
+    `http://localhost:8000/user/auth/fbauuth?${paramString}`,
+    "_blank"
+  );
+    console.log("message lisner facebook activated");
+  const messageListener = (event) => {
+    if (event.origin === "http://localhost:8000") {
+      console.log("from event facebook:", event);
+      if (!event.data) return;
+      const { platform, profilePicture, facebook_rtmp } = event.data;
+      localStorage.setItem("facebook_rtmp", facebook_rtmp);
+      console.log("facebook rtmp url:",facebook_rtmp)
+      // switch (platform) {
+      //   case "youtube":
+      //     let newProfile = {
+      //       profilePicture,
+      //       icon: "fa fa-youtube",
+      //     };
+      //     setProfiles([...profiles, newProfile]);
+      //     break;
+      // }
+
+      window.removeEventListener("message", messageListener);
+    }
+  };
+  window.addEventListener("message", messageListener);
 }
 
 export default CreateLive;

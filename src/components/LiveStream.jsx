@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { useSharedContext } from "../context/SharedContext.js";
+import { sendBySocket } from "../helpers/liveStreamSocket.js";
+import io from "socket.io-client";
 
 const LiveStream = () => {
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -6,16 +9,47 @@ const LiveStream = () => {
   const [stream, setStream] = useState(null);
   const videoRef = React.createRef();
 
+  const { isLive } = useSharedContext();
+
   useEffect(() => {
     const startWebcam = async () => {
       try {
-        const userMedia = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const userMedia = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
         setStream(userMedia);
+
         if (videoRef.current) {
           videoRef.current.srcObject = userMedia;
         }
+        if (isLive) {
+          console.log("going live!");
+          // sendBySocket(webCamFeed);
+          const videoElement = document.getElementById("video");
+          videoElement.srcObject = userMedia;
+          const youtube_rtmp = localStorage.getItem("youtube_rtmp");
+          const facebook_rtmp = localStorage.getItem("facebook_rtmp");
+          const socket = io("http://localhost:8200", {
+            transports: ["websocket"],
+            query: { youtube_rtmp, facebook_rtmp },
+            withCredentials: true,
+          });
+          const mediaRecorder = new MediaRecorder(userMedia, {
+            mimeType: "video/webm;codecs=h264",
+            videoBitsPerSecond: 3 * 1024 * 1024,
+          });
+          mediaRecorder.ondataavailable = (e) => {
+            console.log("sending chunks", e.data);
+            socket.send(e.data);
+          };
+          mediaRecorder.start(1000);
+        }
+        // else {
+        //   mediaRecorder.stop();
+        // }
       } catch (error) {
-        console.error('Error accessing webcam:', error);
+        console.error("Error accessing webcam:", error);
       }
     };
 
@@ -23,10 +57,10 @@ const LiveStream = () => {
 
     return () => {
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, [isLive]);
 
   const toggleVideo = () => {
     if (stream) {
@@ -49,26 +83,35 @@ const LiveStream = () => {
           <video
             ref={videoRef}
             className="w-full h-full object-cover"
-            style={{ transform: 'scaleX(-1)' }} // Apply the mirror effect here
+            id="video"
+            style={{ transform: "scaleX(-1)" }} // Apply the mirror effect here
             autoPlay
             playsInline
           />
           <div className="absolute bottom-4 left-0 right-0 flex justify-center">
             <button
               className={`${
-                videoEnabled ? 'bg-red-500' : 'bg-green-500'
+                videoEnabled ? "bg-red-500" : "bg-green-500"
               } w-12 h-12 rounded-lg flex items-center justify-center text-white transition-colors duration-300`}
               onClick={toggleVideo}
             >
-              <i className={`fa fa-${videoEnabled ? 'video-camera' : 'video-camera-off'}`} />
+              <i
+                className={`fa fa-${
+                  videoEnabled ? "video-camera" : "video-camera-off"
+                }`}
+              />
             </button>
             <button
               className={`${
-                audioEnabled ? 'bg-red-500' : 'bg-green-500'
+                audioEnabled ? "bg-red-500" : "bg-green-500"
               } w-12 h-12 rounded-lg flex items-center justify-center text-white transition-colors duration-300 ml-4`}
               onClick={toggleAudio}
             >
-              <i className={`fa fa-${audioEnabled ? 'microphone' : 'microphone-slash'}`} />
+              <i
+                className={`fa fa-${
+                  audioEnabled ? "microphone" : "microphone-slash"
+                }`}
+              />
             </button>
           </div>
         </div>

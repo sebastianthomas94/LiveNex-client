@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useSharedContext } from '../context/SharedContext.js';
 
 const Chat = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [isLive, setIsLive] = useState(false);
+
+  const { isLive, setIsLive } = useSharedContext();
 
   const handleNewComment = (e) => {
     setNewComment(e.target.value);
