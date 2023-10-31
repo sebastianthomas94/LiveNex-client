@@ -25,7 +25,6 @@ const CreateLive = ({ isOpen, onClose }) => {
 
   const options = [
     { label: "YouTube", icon: "fa fa-youtube" },
-    { label: "Instagram", icon: "fa fa-instagram" },
     { label: "Twitch", icon: "fa fa-twitch" },
     { label: "Facebook", icon: "fa fa-facebook" },
   ];
@@ -302,8 +301,9 @@ function youtubeAutherization(
       if (event.origin === "http://localhost:8000") {
         console.log("from event youtube:", event);
         if (!event.data) return;
-        const { platform, profilePicture, youtube_rtmp } = event.data;
+        const { platform, profilePicture, youtube_rtmp, YT_liveChatId } = event.data;
         localStorage.setItem("youtube_rtmp", youtube_rtmp);
+        localStorage.setItem("YT_liveChatId",YT_liveChatId);
         switch (platform) 
         {
           case "youtube":
@@ -345,9 +345,16 @@ function facebookAutherization(
     if (event.origin === "http://localhost:8000") {
       console.log("from event facebook:", event);
       if (!event.data) return;
-      const { platform, profilePicture, facebook_rtmp } = event.data;
+      const {  profilePicture, facebook_rtmp, facebook_liveVideoId, facebook_accesstoken } = event.data;
       localStorage.setItem("facebook_rtmp", facebook_rtmp);
+      localStorage.setItem("facebook_liveVideoId", facebook_liveVideoId);
+      localStorage.setItem("facebook_accesstoken", facebook_accesstoken);
       console.log("facebook rtmp url:",facebook_rtmp)
+      const newProfile = {
+        profilePicture,
+        icon: "fa fa-facebook",
+      };
+      setProfiles([...profiles, newProfile]);
       // switch (platform) {
       //   case "youtube":
       //     let newProfile = {
@@ -389,15 +396,13 @@ function twitchAutherization(
       const { platform, profilePicture, twitch_rtmp } = event.data;
       localStorage.setItem("twitch_rtmp", twitch_rtmp);
       console.log("twitch rtmp url:",twitch_rtmp)
-      // switch (platform) {
-      //   case "youtube":
-      //     let newProfile = {
-      //       profilePicture,
-      //       icon: "fa fa-youtube",
-      //     };
-      //     setProfiles([...profiles, newProfile]);
-      //     break;
-      // }
+
+          let newProfile = {
+            profilePicture,
+            icon: "fa fa-twitch",
+          };
+          setProfiles([...profiles, newProfile]);
+
 
       window.removeEventListener("message", messageListener);
     }

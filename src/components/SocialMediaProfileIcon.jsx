@@ -3,7 +3,7 @@ import React from "react";
 
 const SocialMediaProfileIcon = ({ imageUrl, iconClassName }) => {
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block m-2">
       {" "}
       {/* Use 'inline-block' to make it size to the content */}
       <img
