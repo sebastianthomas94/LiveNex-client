@@ -66,7 +66,11 @@ const CreateLive = ({ isOpen, onClose }) => {
       toast.error("Enter the values first");
       return;
     }
-    navigate("/stream");
+    if(!isStudioSelected)
+      navigate("/stream");
+    else{
+      navigate("/broadcast");
+    }
   }
 
   return (

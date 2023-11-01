@@ -9,10 +9,12 @@ import LoginPage from "./pages/login";
 import SignupPage from "./pages/signup";
 import DashboardPage from "./pages/DashboardPage";
 import { Provider } from "react-redux";
-import store from './store';
+import store from "./store";
 import WebcamStream from "./pages/webcam-feed";
-import 'font-awesome/css/font-awesome.min.css';
+import "font-awesome/css/font-awesome.min.css";
 import LiveStreamPage from "./pages/LiveStreamPage";
+import DestinationPage from "./pages/DestinationPage";
+import Broadcasting from "./components/Broadcasting";
 
 const router = createBrowserRouter([
   {
@@ -24,20 +26,28 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path:"/login",
+        path: "/login",
         element: <LoginPage />,
       },
       {
-        path:"/signup",
+        path: "/signup",
         element: <SignupPage />,
       },
       {
-        path:"/dashboard",
+        path: "/dashboard",
         element: <DashboardPage />,
       },
       {
-        path:"/stream",
+        path: "/stream",
         element: <LiveStreamPage />,
+      },
+      {
+        path: "/destinations",
+        element: <DestinationPage />,
+      },
+      {
+        path: "/broadcast",
+        element: <Broadcasting />,
       },
     ],
   },
@@ -45,9 +55,9 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-  <Provider store={store}>
-    <RouterProvider router={router} />
-  </Provider>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 );
 

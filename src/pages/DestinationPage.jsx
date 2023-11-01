@@ -2,14 +2,13 @@ import { useEffect } from "react";
 import Header from "../components/header";
 import { useNavigate } from "react-router-dom";
 import SideBar from "../components/sidebar";
-import Dashboard from "../components/Dashboard";
-import Body from "../components/body";
+import Destinations from "../components/Destinations";
 
-function DashboardPage() {
+function DestinationPage() {
   const navigate = useNavigate();
   useEffect(() => {
     if (!localStorage.getItem("user")) navigate("/login");
-    else navigate("/dashboard");
+    else navigate("/destinations");
   }, []);
   return (
     <>
@@ -17,11 +16,11 @@ function DashboardPage() {
       <div className="flex">
         <SideBar />
         <div className="flex-grow m-12">
-          <Dashboard />
+          <Destinations/>
         </div>
       </div>
     </>
   );
 }
 
-export default DashboardPage;
+export default DestinationPage;

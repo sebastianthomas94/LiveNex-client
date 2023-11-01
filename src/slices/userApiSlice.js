@@ -22,9 +22,17 @@ const userApiSlice = apiSlice.injectEndpoints({
         body: data
       })
     }),
+    sentReply: builder.mutation({
+      query: (data) => ({
+        url: "user/reply",
+        method: "post",
+        body: data
+      })
+    }),
   })
 });
 
 export const { useSignupMutation,
                 useLogoutMutation,
-                useSigninMutation } = userApiSlice;
+                useSigninMutation,
+                useSentReplyMutation } = userApiSlice;

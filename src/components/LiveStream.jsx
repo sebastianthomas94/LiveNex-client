@@ -9,7 +9,16 @@ const LiveStream = () => {
   const [stream, setStream] = useState(null);
   const videoRef = React.createRef();
 
-  const { isLive } = useSharedContext();
+  const {
+    isLive,
+    setIsLive,
+    comments,
+    setComments,
+    newComment,
+    setNewComment,
+    sentCom,
+    setSentCom,
+  } = useSharedContext();
 
   useEffect(() => {
     const startWebcam = async () => {
@@ -31,9 +40,24 @@ const LiveStream = () => {
           const youtube_rtmp = localStorage.getItem("youtube_rtmp");
           const facebook_rtmp = localStorage.getItem("facebook_rtmp");
           const twitch_rtmp = localStorage.getItem("twitch_rtmp");
+          const YT_liveChatId = localStorage.getItem("YT_liveChatId");
+          const facebook_liveVideoId = localStorage.getItem(
+            "facebook_liveVideoId"
+          );
+          const facebook_accesstoken = localStorage.getItem(
+            "facebook_accesstoken"
+          );
+
           const socket = io("http://localhost:8200", {
             transports: ["websocket"],
-            query: { youtube_rtmp, facebook_rtmp, twitch_rtmp },
+            query: {
+              youtube_rtmp,
+              facebook_rtmp,
+              twitch_rtmp,
+              YT_liveChatId,
+              facebook_liveVideoId,
+              facebook_accesstoken,
+            },
             withCredentials: true,
           });
           const mediaRecorder = new MediaRecorder(userMedia, {
@@ -45,6 +69,23 @@ const LiveStream = () => {
             socket.send(e.data);
           };
           mediaRecorder.start(1000);
+
+          //for commet fetching.
+          const fetchComments = async () => {
+            try {
+              // Replace this with your actual data fetching logic
+              socket.emit("requestingComments", { data: "Hello, server!" });
+
+
+            } catch (error) {
+              console.error("Error fetching data:", error.message);
+            }
+          };
+          const intervalId = setInterval(fetchComments, 15000);
+          socket.on("comments", (data) => {
+            console.log(data);
+            setComments([...comments, ...data]);
+          });
         }
         // else {
         //   mediaRecorder.stop();
