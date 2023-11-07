@@ -2,13 +2,72 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import SocialMediaProfileIcon from "./SocialMediaProfileIcon";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const CreateLive = ({ isOpen, onClose }) => {
   const [isStudioSelected, setIsStudioSelected] = useState(false); // Default to Studio
   const [videoTitle, setVideoTitle] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0); // State to track upload progress
 
   const [profiles, setProfiles] = useState([]);
+
+  // Function to handle file upload
+  const handleFileUpload = async (file) => {
+    try {
+      console.log("file: ", file);
+      const formData = new FormData();
+      formData.append("file", file, file.name);
+      for (var pair of formData.entries()) {
+        console.log(pair);
+      }
+      // const boundary =
+      //   "----" +
+      //   Array(32)
+      //     .fill(null)
+      //     .map(() => Math.floor(Math.random() * 16).toString(16))
+      //     .join("");
+      const contentType = `multipart/form-data;`;
+
+      const response = await axios.post(
+        "http://localhost:8000/uploadvideo",
+        formData,
+        {
+          headers: {
+            "Content-Type": contentType,
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round(
+              (progressEvent.loaded / progressEvent.total) * 100
+            );
+            setUploadProgress(progress); 
+          },
+        }
+      );
+
+      if (response.status === 200){
+      console.log("Upload completed:", response.data);
+      localStorage.setItem("fileName", response.data.fileName);
+      toast.success("video uploaded!")
+    }
+    } catch (error) {
+      // Handle error scenarios
+      console.error("Error uploading file:", error);
+      toast.error("Failed to upload the file");
+    }
+  };
+
+  const handleUpload = () => {
+    const fileInput = document.getElementById("videoInput");
+    const file = fileInput.files[0];
+    console.log("video file: ", file);
+
+    if (file) {
+      handleFileUpload(file);
+    } else {
+      toast.error("Please select a file to upload");
+    }
+  };
 
   const toggleStudio = () => {
     setIsStudioSelected(!isStudioSelected);
@@ -47,12 +106,7 @@ const CreateLive = ({ isOpen, onClose }) => {
       );
     }
     if (option.label === "Twitch") {
-      twitchAutherization(
-        videoTitle,
-        videoDescription,
-        profiles,
-        setProfiles
-      );
+      twitchAutherization(videoTitle, videoDescription, profiles, setProfiles);
     }
     setIsOpenDropDown(false);
   };
@@ -65,11 +119,12 @@ const CreateLive = ({ isOpen, onClose }) => {
     if (!videoDescription || !videoTitle || !profiles) {
       toast.error("Enter the values first");
       return;
-    }
-    if(!isStudioSelected)
-      navigate("/stream");
-    else{
-      navigate("/broadcast");
+    } else if (!isStudioSelected) navigate("/stream");
+    else {
+      if(localStorage.getItem("fileName"))
+        navigate("/broadcast");
+      else
+        toast.error("Upload the file first");
     }
   }
 
@@ -196,6 +251,35 @@ const CreateLive = ({ isOpen, onClose }) => {
                     onChange={(e) => setVideoDescription(e.target.value)}
                   />
                 </div>
+                {isStudioSelected && (
+                  <div className="mt-3">
+                    <label
+                      htmlFor="videoInput"
+                      className="block text-sm text-gray-500"
+                    >
+                      Select Video
+                    </label>
+                    <input
+                      type="file"
+                      id="videoInput"
+                      accept="video/*"
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    />
+                    <button
+                      onClick={handleUpload}
+                      className="mt-2 bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+                    >
+                      Upload
+                    </button>
+                    {/* Progress bar */}
+                    {uploadProgress > 0 && uploadProgress < 100 && (
+                      <div className="mt-3">
+                        <progress value={uploadProgress} max="100" />
+                        <span>{uploadProgress}%</span>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <p className="mt-3 text-sm text-gray-500">
                   Select Destinations
@@ -305,18 +389,18 @@ function youtubeAutherization(
       if (event.origin === "http://localhost:8000") {
         console.log("from event youtube:", event);
         if (!event.data) return;
-        const { platform, profilePicture, youtube_rtmp, YT_liveChatId } = event.data;
+        const { platform, profilePicture, youtube_rtmp, YT_liveChatId } =
+          event.data;
         localStorage.setItem("youtube_rtmp", youtube_rtmp);
-        localStorage.setItem("YT_liveChatId",YT_liveChatId);
-        switch (platform) 
-        {
+        localStorage.setItem("YT_liveChatId", YT_liveChatId);
+        switch (platform) {
           case "youtube":
-                        let newProfile = {
-                          profilePicture,
-                          icon: "fa fa-youtube",
-                        };
-                        setProfiles([...profiles, newProfile]);
-                        break;
+            let newProfile = {
+              profilePicture,
+              icon: "fa fa-youtube",
+            };
+            setProfiles([...profiles, newProfile]);
+            break;
         }
 
         window.removeEventListener("message", messageListener);
@@ -344,16 +428,21 @@ function facebookAutherization(
     `http://localhost:8000/user/auth/fbauuth?${paramString}`,
     "_blank"
   );
-    console.log("message lisner facebook activated");
+  console.log("message lisner facebook activated");
   const messageListener = (event) => {
     if (event.origin === "http://localhost:8000") {
       console.log("from event facebook:", event);
       if (!event.data) return;
-      const {  profilePicture, facebook_rtmp, facebook_liveVideoId, facebook_accesstoken } = event.data;
+      const {
+        profilePicture,
+        facebook_rtmp,
+        facebook_liveVideoId,
+        facebook_accesstoken,
+      } = event.data;
       localStorage.setItem("facebook_rtmp", facebook_rtmp);
       localStorage.setItem("facebook_liveVideoId", facebook_liveVideoId);
       localStorage.setItem("facebook_accesstoken", facebook_accesstoken);
-      console.log("facebook rtmp url:",facebook_rtmp)
+      console.log("facebook rtmp url:", facebook_rtmp);
       const newProfile = {
         profilePicture,
         icon: "fa fa-facebook",
@@ -375,7 +464,6 @@ function facebookAutherization(
   window.addEventListener("message", messageListener);
 }
 
-
 function twitchAutherization(
   videoTitle,
   videoDescription,
@@ -392,21 +480,20 @@ function twitchAutherization(
     `http://localhost:8000/user/auth/twitchauth?${paramString}`,
     "_blank"
   );
-    console.log("message lisner facebook activated");
+  console.log("message lisner facebook activated");
   const messageListener = (event) => {
     if (event.origin === "http://localhost:8000") {
       console.log("from event facebook:", event);
       if (!event.data) return;
       const { platform, profilePicture, twitch_rtmp } = event.data;
       localStorage.setItem("twitch_rtmp", twitch_rtmp);
-      console.log("twitch rtmp url:",twitch_rtmp)
+      console.log("twitch rtmp url:", twitch_rtmp);
 
-          let newProfile = {
-            profilePicture,
-            icon: "fa fa-twitch",
-          };
-          setProfiles([...profiles, newProfile]);
-
+      let newProfile = {
+        profilePicture,
+        icon: "fa fa-twitch",
+      };
+      setProfiles([...profiles, newProfile]);
 
       window.removeEventListener("message", messageListener);
     }

@@ -6,33 +6,58 @@ const userApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: "user/signup",
         method: "post",
-        body: data
-      })
+        body: data,
+      }),
     }),
-    logout:builder.mutation({
+    logout: builder.mutation({
       query: (data) => ({
         url: "user/logout",
-        method: "get"
-      })
+        method: "get",
+      }),
     }),
     signin: builder.mutation({
       query: (data) => ({
         url: "user/signin",
         method: "post",
-        body: data
-      })
+        body: data,
+      }),
     }),
     sentReply: builder.mutation({
       query: (data) => ({
         url: "user/reply",
         method: "post",
-        body: data
-      })
+        body: data,
+      }),
     }),
-  })
+    isSubscribed: builder.mutation({
+      query: () => ({
+        url: "user/issubscribed",
+        method: "get",
+      }),
+    }),
+    razporpay: builder.mutation({
+      query: (params) => ({
+        url: "user/razor/orders",
+        method: "get",
+        params,
+      }),
+    }),
+    razporPaySuccess: builder.mutation({
+      query: (data) => ({
+        url: "user/razor/success",
+        method: "post",
+        body: data,
+      }),
+    }),
+  }),
 });
 
-export const { useSignupMutation,
-                useLogoutMutation,
-                useSigninMutation,
-                useSentReplyMutation } = userApiSlice;
+export const {
+  useSignupMutation,
+  useLogoutMutation,
+  useSigninMutation,
+  useSentReplyMutation,
+  useIsSubscribedMutation,
+  useRazporpayMutation,
+  useRazporPaySuccessMutation,
+} = userApiSlice;

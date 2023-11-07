@@ -15,6 +15,9 @@ import "font-awesome/css/font-awesome.min.css";
 import LiveStreamPage from "./pages/LiveStreamPage";
 import DestinationPage from "./pages/DestinationPage";
 import Broadcasting from "./components/Broadcasting";
+import Test from "./components/test";
+import SubscriptionPage from "./pages/SubscriptionPage";
+import AdminLoginPage from "./pages/admin-pages/AdminLoginPage";
 
 const router = createBrowserRouter([
   {
@@ -49,16 +52,26 @@ const router = createBrowserRouter([
         path: "/broadcast",
         element: <Broadcasting />,
       },
+      {
+        path: "/subscription",
+        element: <SubscriptionPage/>
+      },
+      {
+        path: "/admin/login",
+        element: <AdminLoginPage/>
+      },
+      {
+        path: "/test",
+        element: <Test/>
+      },
     ],
   },
 ]);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

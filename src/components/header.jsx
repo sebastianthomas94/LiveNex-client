@@ -29,6 +29,10 @@ const Header = () => {
     }
   };
 
+  const upGradeHandle = ()=>{
+     navigate("/subscription");
+  };
+
   return (
     <header className="bg-white shadow-md p-1 flex justify-between items-center">
       {/* Logo on the left */}
@@ -45,6 +49,7 @@ const Header = () => {
         {/* Upgrade Button */}
         <button
           className="bg-blue-500 text-white font-semibold px-4 py-2 rounded-full mr-4 hover:bg-blue-600 transition duration-200"
+          onClick={upGradeHandle}
         >
           Upgrade
         </button>
