@@ -1,9 +1,13 @@
 import React, { useState } from "react";
+import { useLoginMutation } from "../../slices/userApiSlice";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [login] = useLoginMutation();
+  const navigate = useNavigate();
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -13,15 +17,24 @@ function Login() {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (username.trim() === "" || password.trim() === "") {
       setErrorMessage("Please enter both username and password");
       return;
     }
-    // Perform login action here if both fields are filled
-    console.log("Logged in with:", { username, password });
-    // For security purposes, avoid logging or displaying passwords in production
+    try {
+      const res = await login({ username, password }).unwrap();
+      console.log(res);
+      if (res.login) {
+        localStorage.setItem("admin", "logged in");
+
+        navigate("/admin/dashboard");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("username or password is incorrect");
+    }
   };
 
   return (
@@ -29,7 +42,9 @@ function Login() {
       <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full">
         <h2 className="text-2xl font-bold mb-4 text-center">Admin Login</h2>
         {errorMessage && (
-          <div className="text-red-500 mb-4 text-sm text-center">{errorMessage}</div>
+          <div className="text-red-500 mb-4 text-sm text-center">
+            {errorMessage}
+          </div>
         )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

@@ -2,7 +2,7 @@ import React from 'react';
 
 const Destinations = () => {
   return (
-    <div className="bg-gray-100 min-h-screen flex justify-center items-center">
+    <div className=" m-5 flex justify-center items-center">
       <div className="bg-white p-8 rounded shadow-md max-w-2xl w-full text-center">
         <h1 className="text-3xl font-bold mb-6">Welcome to Our Streaming Platform</h1>
         <p className="text-lg mb-6">Stream your content to multiple platforms simultaneously:</p>

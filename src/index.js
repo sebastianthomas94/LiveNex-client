@@ -10,7 +10,6 @@ import SignupPage from "./pages/signup";
 import DashboardPage from "./pages/DashboardPage";
 import { Provider } from "react-redux";
 import store from "./store";
-import WebcamStream from "./pages/webcam-feed";
 import "font-awesome/css/font-awesome.min.css";
 import LiveStreamPage from "./pages/LiveStreamPage";
 import DestinationPage from "./pages/DestinationPage";
@@ -18,6 +17,12 @@ import Broadcasting from "./components/Broadcasting";
 import Test from "./components/test";
 import SubscriptionPage from "./pages/SubscriptionPage";
 import AdminLoginPage from "./pages/admin-pages/AdminLoginPage";
+import Dashboard from "./components/admin-components/Dashboard";
+import AdminDashboardPage from "./pages/admin-pages/AdminDashboardPage";
+import AdminDestinations from "./pages/admin-pages/AdminDestinations";
+import TicketsPage from "./pages/TicketsPage";
+import CreateTicketPage from "./pages/CreateTicketPage";
+import AdminTicketPage from "./pages/admin-pages/AdminTicketPage";
 
 const router = createBrowserRouter([
   {
@@ -54,24 +59,56 @@ const router = createBrowserRouter([
       },
       {
         path: "/subscription",
-        element: <SubscriptionPage/>
+        element: <SubscriptionPage />,
       },
       {
         path: "/admin/login",
-        element: <AdminLoginPage/>
+        element: <AdminLoginPage />,
+      },
+      {
+        path: "/admin/dashboard",
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: "/admin/destinations",
+        element: <AdminDestinations />,
+      },
+      {
+        path: "/admin/tickets",
+        element: <AdminTicketPage />,
+      },
+      {
+        path: "/tickets",
+        element: <TicketsPage />,
+      },
+      {
+        path: "/tickets/create",
+        element: <CreateTicketPage />,
       },
       {
         path: "/test",
-        element: <Test/>
+        element: <Test />,
       },
     ],
+    // path: "/admin",
+    // element: <App />,
+    // children: [
+    //   {
+    //     path: "/admin/login",
+    //     element: <AdminLoginPage/>
+    //   },
+    //   {
+    //     path: "/admin/dashboard",
+    //     element: <Dashboard/>
+    //   },
+    // ]
   },
 ]);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

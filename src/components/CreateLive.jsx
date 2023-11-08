@@ -116,6 +116,7 @@ const CreateLive = ({ isOpen, onClose }) => {
   }
 
   function goLive() {
+    localStorage.setItem("title", videoTitle);
     if (!videoDescription || !videoTitle || !profiles) {
       toast.error("Enter the values first");
       return;

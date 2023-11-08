@@ -49,6 +49,54 @@ const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    login: builder.mutation({
+      query: (data) => ({
+        url: "user/admin/login",
+        method: "post",
+        body: data,
+      }),
+    }),
+    getUsers: builder.mutation({
+      query: () => ({
+        url: "user/admin/getusers",
+        method: "get",
+      }),
+    }),
+    setLiveData: builder.mutation({
+      query: (data) => ({
+        url: "user/setlivedata",
+        method: "post",
+        body: data,
+      }),
+    }),
+    getPastLives: builder.mutation({
+      query: () => ({
+        url: "user/getpastlives",
+        method: "get",
+      }),
+    }),
+    deleteUser: builder.mutation({
+      query: (_id) => ({
+        url: "user/admin/deleteuser",
+        method: "get",
+        params: {
+          _id
+        }
+      }),
+    }),
+    createTicket: builder.mutation({
+      query: (params) => ({
+        url: "user/createticket",
+        method: "get",
+        params:params,
+      }),
+    }),
+    getTickets: builder.mutation({
+      query: () => ({
+        url: "user/gettickets",
+        method: "get",
+      }),
+    }),
   }),
 });
 
@@ -60,4 +108,11 @@ export const {
   useIsSubscribedMutation,
   useRazporpayMutation,
   useRazporPaySuccessMutation,
+  useLoginMutation,
+  useGetUsersMutation,
+  useSetLiveDataMutation,
+  useGetPastLivesMutation,
+  useDeleteUserMutation,
+useCreateTicketMutation,
+useGetTicketsMutation,
 } = userApiSlice;

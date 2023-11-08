@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import { io } from "socket.io-client";
+import { useSetLiveDataMutation } from "../slices/userApiSlice";
 
 const Broadcasting = () => {
+
+  const [setLiveData] = useSetLiveDataMutation();
   useEffect(() => {
     const youtube_rtmp = localStorage.getItem("youtube_rtmp");
     const facebook_rtmp = localStorage.getItem("facebook_rtmp");
@@ -25,6 +28,31 @@ const Broadcasting = () => {
       },
       withCredentials: true,
     });
+  }, []);
+
+  useEffect(() => {
+    let destinations = [];
+    let broadcast;
+    if (localStorage.getItem("youtube_rtmp")) destinations.push("youtube");
+    if (localStorage.getItem("facebook_rtmp")) destinations.push("facebook");
+    if (localStorage.getItem("twitch_rtmp")) destinations.push("twitch");
+    if (localStorage.getItem("fileName")) broadcast = true;
+    else broadcast = false;
+    const title = localStorage.getItem("title");
+    const startTime = new Date();
+    const data = {
+      startTime,
+      title,
+      destinations,
+      broadcast,
+    };
+    console.log(data);
+    setLiveData(data)
+      .unwrap()
+      .then((res) => {
+        console.log("live data added");
+      })
+      .catch((e) => console.log(e.message));
   }, []);
   return (
     <div className="bg-gray-900 h-screen flex items-center justify-center">
