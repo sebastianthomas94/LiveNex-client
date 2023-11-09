@@ -12,6 +12,26 @@ export default function Signup() {
   const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
 
+  const googleAuth = async () => {
+    try {
+      const authWindow = window.open("http://localhost:8000/user/auth/google");
+      
+      const messageListener = (event) => {
+        if (event.origin === "http://localhost:8000") {
+          const response = event.data;
+          localStorage.setItem("user", response.email)
+          window.removeEventListener("message", messageListener);
+          if (response) navigate("/dashboard");
+        }
+      };
+      window.addEventListener("message", messageListener);
+      toast.info("login successful");
+    } catch (error) {
+      if (error) throw error;
+      toast.error(error.message);
+    }
+  };
+
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
   };
@@ -136,17 +156,17 @@ export default function Signup() {
           </form>
           {/* <!-- Google Login Option --> */}
           <div className="mt-4">
-            <Link to="/user/auth/google">
-              <button className="px-4 py-2 border flex gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150 ">
+          <button className="px-4 py-2 border flex gap-2 border-slate-200 rounded-lg text-slate-700 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150 "
+              onClick={googleAuth}
+              >
                 <img
                   className="w-6 h-6"
                   src="https://www.svgrepo.com/show/475656/google-color.svg"
                   loading="lazy"
                   alt="google logo"
                 />
-                <span>SignUp with Google</span>
+                <span>Sign In with Google</span>
               </button>
-            </Link>
           </div>
 
           {/* <!-- Link to Login Page --> */}

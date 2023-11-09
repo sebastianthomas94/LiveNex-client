@@ -80,21 +80,34 @@ const userApiSlice = apiSlice.injectEndpoints({
         url: "user/admin/deleteuser",
         method: "get",
         params: {
-          _id
-        }
+          _id,
+        },
       }),
     }),
     createTicket: builder.mutation({
       query: (params) => ({
         url: "user/createticket",
         method: "get",
-        params:params,
+        params: params,
       }),
     }),
     getTickets: builder.mutation({
       query: () => ({
         url: "user/gettickets",
         method: "get",
+      }),
+    }),
+    getAllTickets: builder.mutation({
+      query: () => ({
+        url: "user/admin/getalltickets",
+        method: "get",
+      }),
+    }),
+    sentTicketReply: builder.mutation({
+      query: (data) => ({
+        url: "user/admin/sentticketreply",
+        method: "post",
+        body: data,
       }),
     }),
   }),
@@ -113,6 +126,8 @@ export const {
   useSetLiveDataMutation,
   useGetPastLivesMutation,
   useDeleteUserMutation,
-useCreateTicketMutation,
-useGetTicketsMutation,
+  useCreateTicketMutation,
+  useGetTicketsMutation,
+  useGetAllTicketsMutation,
+  useSentTicketReplyMutation,
 } = userApiSlice;

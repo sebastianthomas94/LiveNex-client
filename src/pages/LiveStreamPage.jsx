@@ -3,9 +3,20 @@ import LiveStream from "../components/LiveStream";
 import Chat from "../components/Chat";
 import { SharedProvider } from "../context/SharedContext.js"; //provider for go live button
 import { useSetLiveDataMutation } from "../slices/userApiSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function LiveStreamPage() {
   const [setLiveData] = useSetLiveDataMutation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const cookies = document.cookie.split(";");
+    const fooCookie = cookies.find(function (cookie) {
+      return cookie?.split("=")[0] === "jwt";
+    });
+    const jwt = fooCookie.split("=")[1];
+    if (!localStorage.getItem("user") && !jwt) navigate("/login");
+
+  }, []);
   useEffect(() => {
     let destinations = [];
     let broadcast;

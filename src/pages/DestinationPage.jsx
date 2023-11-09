@@ -7,8 +7,13 @@ import Destinations from "../components/Destinations";
 function DestinationPage() {
   const navigate = useNavigate();
   useEffect(() => {
-    if (!localStorage.getItem("user")) navigate("/login");
-    else navigate("/destinations");
+    const cookies = document.cookie.split(";");
+    const fooCookie = cookies.find(function (cookie) {
+      return cookie?.split("=")[0] === "jwt";
+    });
+    const jwt = fooCookie.split("=")[1];
+    if (!localStorage.getItem("user") && !jwt) navigate("/login");
+
   }, []);
   return (
     <>
