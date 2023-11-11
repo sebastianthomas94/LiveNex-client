@@ -41,6 +41,7 @@ const LiveStream = () => {
           const facebook_rtmp = localStorage.getItem("facebook_rtmp");
           const twitch_rtmp = localStorage.getItem("twitch_rtmp");
           const YT_liveChatId = localStorage.getItem("YT_liveChatId");
+          const youtubeLiveUrl = localStorage.getItem("youtubeLiveUrl");
           const facebook_liveVideoId = localStorage.getItem(
             "facebook_liveVideoId"
           );

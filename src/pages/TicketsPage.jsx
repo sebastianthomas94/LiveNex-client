@@ -11,7 +11,7 @@ function TicketsPage() {
     const fooCookie = cookies.find(function (cookie) {
       return cookie?.split("=")[0] === "jwt";
     });
-    const jwt = fooCookie.split("=")[1];
+    const jwt = fooCookie?.split("=")[1];
     if (!localStorage.getItem("user") && !jwt) navigate("/login");
 
   }, []);

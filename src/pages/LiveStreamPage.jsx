@@ -13,7 +13,7 @@ export default function LiveStreamPage() {
     const fooCookie = cookies.find(function (cookie) {
       return cookie?.split("=")[0] === "jwt";
     });
-    const jwt = fooCookie.split("=")[1];
+    const jwt = fooCookie?.split("=")[1];
     if (!localStorage.getItem("user") && !jwt) navigate("/login");
 
   }, []);
@@ -26,12 +26,14 @@ export default function LiveStreamPage() {
     if (localStorage.getItem("fileName")) broadcast = true;
     else broadcast = false;
     const title = localStorage.getItem("title");
+    const youtubeLiveUrl = localStorage.getItem("youtubeLiveUrl");
     const startTime = new Date();
     const data = {
       startTime,
       title,
       destinations,
       broadcast,
+      youtubeLiveUrl
     };
     console.log(data);
     setLiveData(data)

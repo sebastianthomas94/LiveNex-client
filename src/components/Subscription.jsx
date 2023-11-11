@@ -1,5 +1,10 @@
-import React from "react";
-import { useIsSubscribedMutation, useRazporPaySuccessMutation, useRazporpayMutation } from "../slices/userApiSlice";
+import React, { useEffect, useState } from "react";
+import {
+  useGetSubscriptionDetailsMutation,
+  useIsSubscribedMutation,
+  useRazporPaySuccessMutation,
+  useRazporpayMutation,
+} from "../slices/userApiSlice";
 import { toast } from "react-toastify";
 
 const Subscription = () => {
@@ -58,11 +63,27 @@ const Subscription = () => {
   const [isSubscribed] = useIsSubscribedMutation();
   const [razorpay] = useRazporpayMutation();
   const [razorpaySuccess] = useRazporPaySuccessMutation();
+  const [getSubscriptionDetails] = useGetSubscriptionDetailsMutation();
+  const [userPlan, setuserPlan] = useState("");
+  const [isSubscribedstate, setIsSubscribedstate] = useState(false);
+
+  useEffect(() => {
+    getSubscriptionDetails()
+      .unwrap()
+      .then((res) => {
+        console.log(res);
+        setuserPlan(res.plan);
+        setIsSubscribedstate(Boolean(res.plan));
+      })
+      .catch((e) => {
+        console.log("error at getSubscriptionDetails:", e.message);
+      });
+  }, [isSubscribedstate, userPlan]);
 
   const upgradePlan = async (plan) => {
     try {
       const isSub = await isSubscribed().unwrap();
-      if (isSub.data) {
+      if (isSub.data && userPlan != "Basic Plan") {
         toast.dark("already subscribed!");
         return;
       }
@@ -75,11 +96,17 @@ const Subscription = () => {
         );
         return;
       }
-      const params={
-        plan
+      let cost;
+      if (plan == "Pro Plan" && userPlan == "Basic Plan")
+        cost = 599.99 - 399.99;
+      else if (plan == "Pro Plan") cost = 599.99;
+      else if (plan == "Basic Plan") cost = 399.99;
+      const params = {
+        plan,
+        cost,
       };
       const result = await razorpay(params).unwrap();
-      console.log("order created: ",result);
+      console.log("order created: ", result);
       if (!result) {
         toast.error("Server error. Are you online?");
         return;
@@ -90,7 +117,7 @@ const Subscription = () => {
         amount: amount.toString(),
         currency: currency,
         name: "LiveNex",
-        description: "Enjoy seamless streaming",
+        description: `Enjoy seamless streaming. you are Upgrading to${plan}.`,
         image: {},
         order_id: order_id,
         handler: async function (response) {
@@ -100,9 +127,13 @@ const Subscription = () => {
             razorpayOrderId: response.razorpay_order_id,
             razorpaySignature: response.razorpay_signature,
             email,
+            plan,
           };
           const result = await razorpaySuccess(data).unwrap();
-          if (result.msg) toast.info("payment successful");
+          if (result.msg) {
+            toast.info("payment successful");
+            setIsSubscribedstate(true);
+          }
           if (result.msg_error) toast.error("payment failure");
         },
         prefill: {
@@ -121,10 +152,9 @@ const Subscription = () => {
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
     } catch (error) {
-        console.error(error)
+      console.error(error);
     }
   };
-
 
   function loadScript(src) {
     return new Promise((resolve) => {
@@ -151,8 +181,13 @@ const Subscription = () => {
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`border border-gray-200 p-6 rounded-lg flex flex-col justify-between ${plan.color}`}
+              className={`border border-gray-200 p-6 rounded-lg flex flex-col justify-between ${
+                plan.color
+              } ${isSubscribed && plan.name === plan ? "opacity-50" : ""}`}
             >
+              {userPlan == plan.name && (
+                <i className="fa fa-check text-2xl font-semibold mb-4 text-center"></i>
+              )}
               <h3 className="text-2xl font-semibold mb-4 text-center">
                 {plan.name}
               </h3>
@@ -180,9 +215,19 @@ const Subscription = () => {
                   </li>
                 ))}
               </ul>
+              {isSubscribedstate && userPlan === plan.name && (
+                <div className="text-center text-green-500 font-bold">
+                  &#10003; Subscribed
+                </div>
+              )}
               <button
                 className={`${plan.buttonColor} hover:${plan.color} text-white font-semibold py-2 px-4 rounded-md w-full`}
                 onClick={() => upgradePlan(plan.name)}
+                disabled={
+                  (isSubscribedstate && plan.name === userPlan) ||
+                  (userPlan == "Pro Plan" && plan.name == "Basic Plan") ||
+                  (plan.name == "Free Plan")
+                } // Disable the button if already subscribed
               >
                 Select Plan
               </button>

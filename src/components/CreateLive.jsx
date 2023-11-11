@@ -390,10 +390,12 @@ function youtubeAutherization(
       if (event.origin === "http://localhost:8000") {
         console.log("from event youtube:", event);
         if (!event.data) return;
-        const { platform, profilePicture, youtube_rtmp, YT_liveChatId } =
+        const { platform, profilePicture, youtube_rtmp, YT_liveChatId, youtubeLiveUrl } =
           event.data;
         localStorage.setItem("youtube_rtmp", youtube_rtmp);
         localStorage.setItem("YT_liveChatId", YT_liveChatId);
+        localStorage.setItem("youtubeLiveUrl", youtubeLiveUrl);
+
         switch (platform) {
           case "youtube":
             let newProfile = {

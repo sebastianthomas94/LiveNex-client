@@ -110,6 +110,12 @@ const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getSubscriptionDetails: builder.mutation({
+      query: () => ({
+        url: "user/getSubscriptionDetails",
+        method: "get",
+      }),
+    }),
   }),
 });
 
@@ -130,4 +136,5 @@ export const {
   useGetTicketsMutation,
   useGetAllTicketsMutation,
   useSentTicketReplyMutation,
+  useGetSubscriptionDetailsMutation,
 } = userApiSlice;

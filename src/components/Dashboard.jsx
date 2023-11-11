@@ -11,6 +11,11 @@ export default function Dashboard() {
 
   // Function to toggle the modal state
   const toggleModal = () => {
+    localStorage.removeItem("youtube_rtmp");
+    localStorage.removeItem("facebook_rtmp");
+    localStorage.removeItem("twitch_rtmp");
+    localStorage.removeItem("fileName");
+    localStorage.removeItem("youtubeLiveUrl");
     setIsModalOpen(!isModalOpen);
   };
 
@@ -22,13 +27,16 @@ export default function Dashboard() {
       .then((res) => {
         // console.log(res);
         setPastLives(res);
+      })
+      .catch((e) => {
+        console.log("error at getting pastlives: ", e);
       });
   }, []);
 
   return (
     <div>
-            {/* "Create Live" button */}
-            <button
+      {/* "Create Live" button */}
+      <button
         className="bg-blue-500 text-white font-semibold my-5 px-4 py-2 rounded-full hover:bg-blue-600 transition duration-200 mt-4"
         onClick={toggleModal}
       >
@@ -73,6 +81,7 @@ export default function Dashboard() {
                 <tr>
                   <th className="px-6 py-3 bg-gray-100">Destination</th>
                   <th className="px-6 py-3 bg-gray-100">Title</th>
+                  <th className="px-6 py-3 bg-gray-100">Link</th>
                   <th className="px-6 py-3 bg-gray-100">Start Time</th>
                   <th className="px-6 py-3 bg-gray-100">Broadcast Or Live</th>
                 </tr>
@@ -95,6 +104,20 @@ export default function Dashboard() {
                     </td>
                     <td className="px-6 py-4">{live.title}</td>
                     <td className="px-6 py-4">
+                      {live.youtubeLiveUrl && (
+                        <a
+                          href={live.youtubeLiveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <i
+                            className="fa fa-youtube-play"
+                            aria-hidden="true"
+                          ></i>
+                        </a>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
                       {new Date(live.startTime).toLocaleDateString("en-GB")}
                     </td>
 
@@ -116,7 +139,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-
 
       <CreateLive isOpen={isModalOpen} onClose={toggleModal} />
     </div>

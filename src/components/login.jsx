@@ -12,10 +12,7 @@ export default function Login() {
   const [signin] = useSigninMutation();
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    if(localStorage.getItem("user"))
-      navigate("/dashboard")
-  },[])
+
 
   const googleAuth = async () => {
     try {

@@ -4,16 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function Home() {
   const navigate = useNavigate();
-  useEffect(() => {
-    const cookies = document.cookie.split(";");
-    const fooCookie = cookies.find(function (cookie) {
-      return cookie?.split("=")[0] === "jwt";
-    });
-    const jwt = fooCookie.split("=")[1];
-    if (localStorage.getItem("user") && jwt) navigate("/dashboard");
-    else navigate("/");
 
-  }, []);
   return (
     <>
       <nav className="bg-blue-600 p-4">

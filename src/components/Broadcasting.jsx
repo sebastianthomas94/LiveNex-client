@@ -40,11 +40,14 @@ const Broadcasting = () => {
     else broadcast = false;
     const title = localStorage.getItem("title");
     const startTime = new Date();
+    const youtubeLiveUrl = localStorage.getItem("youtubeLiveUrl");
+
     const data = {
       startTime,
       title,
       destinations,
       broadcast,
+      youtubeLiveUrl,
     };
     console.log(data);
     setLiveData(data)

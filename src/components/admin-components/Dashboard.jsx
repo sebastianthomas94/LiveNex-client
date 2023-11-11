@@ -1,10 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { useDeleteUserMutation, useGetUsersMutation } from "../../slices/userApiSlice";
+import {
+  useDeleteUserMutation,
+  useGetUsersMutation,
+} from "../../slices/userApiSlice";
 
 const Dashboard = () => {
   const [getUsers] = useGetUsersMutation();
   const [users, setUsers] = useState([]);
   const [deleteUser] = useDeleteUserMutation();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(10);
+
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  
 
   useEffect(() => {
     getUsers()
@@ -27,6 +51,7 @@ const Dashboard = () => {
       twitch,
       facebook,
       razorpayDetails,
+      email,
     } = userData;
 
     let platform = [];
@@ -57,26 +82,35 @@ const Dashboard = () => {
       validity: formattedDate,
       platforms: platform,
       blocked: false,
+      email,
     };
 
     return user;
   };
 
-
-
   const deleteUserHandle = (userId) => {
     setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-    deleteUser(userId).unwrap()
+    deleteUser(userId).unwrap();
     // Make an API call to delete the user from the server
   };
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   return (
     <div className="max-w-4xl mx-auto mt-4 p-4 rounded-lg shadow-md">
+      <div className="mb-4">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearch}
+          placeholder="Search by name or email"
+          className="p-2 rounded border outline-none w-full"
+        />
+      </div>
       <table className="w-full rounded-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-200 text-left">
             <th className="p-4">Serial No</th>
-            <th className="p-4">Username</th>
+            <th className="p-4">User</th>
             <th className="p-4">Subscription Plan</th>
             <th className="p-4">Validity</th>
             <th className="p-4">Platform</th>
@@ -84,7 +118,7 @@ const Dashboard = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user, i) => (
+          {currentUsers.map((user, i) => (
             <tr key={user.id} className="text-left">
               <td className="p-4">{i + 1}</td>
               <td className="p-4">{user.name}</td>
@@ -123,6 +157,25 @@ const Dashboard = () => {
           ))}
         </tbody>
       </table>
+      <div className="flex justify-center mt-4">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+          className="mx-2 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+        >
+          Prev
+        </button>
+        <span className="mx-2">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          disabled={currentUsers.length < usersPerPage}
+          onClick={() => setCurrentPage(currentPage + 1)}
+          className="mx-2 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
