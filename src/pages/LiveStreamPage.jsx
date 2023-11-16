@@ -15,7 +15,6 @@ export default function LiveStreamPage() {
     });
     const jwt = fooCookie?.split("=")[1];
     if (!localStorage.getItem("user") && !jwt) navigate("/login");
-
   }, []);
   useEffect(() => {
     let destinations = [];
@@ -27,13 +26,15 @@ export default function LiveStreamPage() {
     else broadcast = false;
     const title = localStorage.getItem("title");
     const youtubeLiveUrl = localStorage.getItem("youtubeLiveUrl");
+    const twitchLiveUrl =  localStorage.getItem("twitchLiveUrl");
     const startTime = new Date();
     const data = {
       startTime,
       title,
       destinations,
       broadcast,
-      youtubeLiveUrl
+      youtubeLiveUrl,
+      twitchLiveUrl,
     };
     console.log(data);
     setLiveData(data)

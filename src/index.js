@@ -23,6 +23,9 @@ import AdminDestinations from "./pages/admin-pages/AdminDestinations";
 import TicketsPage from "./pages/TicketsPage";
 import CreateTicketPage from "./pages/CreateTicketPage";
 import AdminTicketPage from "./pages/admin-pages/AdminTicketPage";
+import PastLivesPage from "./pages/PastLivesPage";
+import UpcomingLivesPage from "./pages/UpcomingLivesPage";
+import SchedulingLivesLoader from "./components/SchedulingLiveLoader";
 
 const router = createBrowserRouter([
   {
@@ -84,6 +87,18 @@ const router = createBrowserRouter([
       {
         path: "/tickets/create",
         element: <CreateTicketPage />,
+      },
+      {
+        path: "/pastlives",
+        element: <PastLivesPage />,
+      },
+      {
+        path: "/upcominglives",
+        element: <UpcomingLivesPage />,
+      },
+      {
+        path: "/schedulingLive",
+        element: <SchedulingLivesLoader />,
       },
       {
         path: "/test",

@@ -59,14 +59,14 @@ const Dashboard = () => {
     if (twitch) platform.push("twitch");
     if (facebook) platform.push("facebook");
     let sub;
-    if (razorpayDetails) sub = "Basic";
+    if (razorpayDetails) sub = razorpayDetails.plan;
     else sub = "No Plan";
     let formattedDate;
     if (razorpayDetails?.endDate) {
       const isoDateString = razorpayDetails?.endDate;
       const date = new Date(isoDateString);
 
-      formattedDate = date.toLocaleDateString("en-US", {
+      formattedDate = date.toLocaleDateString("en-Uk", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -113,7 +113,6 @@ const Dashboard = () => {
             <th className="p-4">User</th>
             <th className="p-4">Subscription Plan</th>
             <th className="p-4">Validity</th>
-            <th className="p-4">Platform</th>
             <th className="p-4">Action</th>
           </tr>
         </thead>
@@ -132,7 +131,7 @@ const Dashboard = () => {
                 </span>
               </td>
               <td className="p-4">{user.validity}</td>
-              <td className="p-4">
+              {/* <td className="p-4">
                 <div className="flex items-center">
                   {user.platforms.includes("twitch") && (
                     <i className="fa fa-twitch text-purple-500 mr-2"></i>
@@ -144,7 +143,7 @@ const Dashboard = () => {
                     <i className="fa fa-youtube text-red-500 mr-2"></i>
                   )}
                 </div>
-              </td>
+              </td> */}
               <td className="p-4">
                 <button
                   onClick={() => deleteUserHandle(user.id)}

@@ -41,13 +41,14 @@ const Broadcasting = () => {
     const title = localStorage.getItem("title");
     const startTime = new Date();
     const youtubeLiveUrl = localStorage.getItem("youtubeLiveUrl");
-
+    const videoUrl = localStorage.getItem("s3VideoUrl");
     const data = {
       startTime,
       title,
       destinations,
       broadcast,
       youtubeLiveUrl,
+      videoUrl,
     };
     console.log(data);
     setLiveData(data)

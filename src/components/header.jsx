@@ -22,6 +22,8 @@ const Header = () => {
       await logoutApiCall().unwrap();
       navigate("/login");
       localStorage.clear();
+      document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+
       toast.success("logout successfully");
     } catch (err) {
       // toast.error(err.message);

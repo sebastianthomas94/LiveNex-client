@@ -7,6 +7,8 @@ const LiveStream = () => {
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [stream, setStream] = useState(null);
+  const [screenSharing, setScreenSharing] = useState(false);
+
   const videoRef = React.createRef();
 
   const {
@@ -21,12 +23,26 @@ const LiveStream = () => {
   } = useSharedContext();
 
   useEffect(() => {
+    console.log("entered");
     const startWebcam = async () => {
       try {
-        const userMedia = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
+        let userMedia;
+        if (screenSharing) {
+          // Start screen sharing
+          userMedia = await navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: true,
+          });
+          if (stream) {
+            stream.getVideoTracks()[0].enabled = false;
+            setVideoEnabled(false);
+          }
+        } else {
+          userMedia = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+          });
+        }
         setStream(userMedia);
 
         if (videoRef.current) {
@@ -61,6 +77,7 @@ const LiveStream = () => {
             },
             withCredentials: true,
           });
+
           const mediaRecorder = new MediaRecorder(userMedia, {
             mimeType: "video/webm;codecs=h264",
             videoBitsPerSecond: 3 * 1024 * 1024,
@@ -76,8 +93,6 @@ const LiveStream = () => {
             try {
               // Replace this with your actual data fetching logic
               socket.emit("requestingComments", { data: "Hello, server!" });
-
-
             } catch (error) {
               console.error("Error fetching data:", error.message);
             }
@@ -88,6 +103,7 @@ const LiveStream = () => {
             setComments([...comments, ...data]);
           });
         }
+
         // else {
         //   mediaRecorder.stop();
         // }
@@ -103,7 +119,11 @@ const LiveStream = () => {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [isLive]);
+  }, [isLive, screenSharing]);
+
+  const toggleScreenSharing = () => {
+    setScreenSharing(!screenSharing);
+  };
 
   const toggleVideo = () => {
     if (stream) {
@@ -127,7 +147,7 @@ const LiveStream = () => {
             ref={videoRef}
             className="w-full h-full object-cover"
             id="video"
-            style={{ transform: "scaleX(-1)" }} // Apply the mirror effect here
+            style={{ transform: "scaleX(-1)" }}
             autoPlay
             playsInline
           />
@@ -155,6 +175,14 @@ const LiveStream = () => {
                   audioEnabled ? "microphone" : "microphone-slash"
                 }`}
               />
+            </button>
+            <button
+              className={`${
+                screenSharing ? "bg-blue-500" : "bg-purple-500"
+              } w-12 h-12 rounded-lg flex items-center justify-center text-white transition-colors duration-300 ml-4`}
+              onClick={toggleScreenSharing}
+            >
+              <i className={`fa fa-${screenSharing ? "desktop" : "tv"}`} />
             </button>
           </div>
         </div>

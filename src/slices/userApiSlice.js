@@ -116,6 +116,19 @@ const userApiSlice = apiSlice.injectEndpoints({
         method: "get",
       }),
     }),
+    sentScheduleInfo: builder.mutation({
+      query: (data) => ({
+        url: "user/scheduleinfoupdate",
+        method: "post",
+        body: data,
+      }),
+    }),
+    getUpcomingLives: builder.mutation({
+      query: () => ({
+        url: "user/getUpcomingLives",
+        method: "get",
+      }),
+    }),
   }),
 });
 
@@ -137,4 +150,6 @@ export const {
   useGetAllTicketsMutation,
   useSentTicketReplyMutation,
   useGetSubscriptionDetailsMutation,
+  useSentScheduleInfoMutation,
+  useGetUpcomingLivesMutation,
 } = userApiSlice;
